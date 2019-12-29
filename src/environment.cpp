@@ -63,13 +63,12 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
     // Segmentation of point cloud is the next step to understand the points
     // rendered above after scanning with lidar sensor
-    std::pair< pcl::PointCloud<pcl::PointXYZ>::Ptr ,pcl::PointCloud<pcl::PointXYZ>::Ptr > segResult = point_processor->SegmentPlane(point_cloud, 100, 1.0);
+    std::pair< pcl::PointCloud<pcl::PointXYZ>::Ptr ,pcl::PointCloud<pcl::PointXYZ>::Ptr > segResult = point_processor->SegmentPlane_algo(point_cloud, 100, 0.2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr obstacle_cloud = segResult.first;
     pcl::PointCloud<pcl::PointXYZ>::Ptr road_cloud = segResult.second;
     // Render the two clouds
-    renderPointCloud(viewer, obstacle_cloud, "obstacle_cloud", Color(0,1,0));
-    renderPointCloud(viewer, road_cloud, "road_cloud", Color(1,0,0));
-
+    renderPointCloud(viewer, obstacle_cloud, "obstacle_cloud", Color(1,0,0));
+    renderPointCloud(viewer, road_cloud, "road_cloud", Color(0,1,0));
   
 }
 
