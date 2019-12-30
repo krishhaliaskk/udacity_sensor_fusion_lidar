@@ -81,6 +81,10 @@ std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<flo
 	// TODO: Fill out this function to return list of indices for each cluster
 
 	std::vector<std::vector<int>> clusters;
+    for (std::vector point: points)
+    {
+
+    }
  
 	return clusters;
 
