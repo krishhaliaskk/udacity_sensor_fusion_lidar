@@ -59,7 +59,7 @@ struct KdTree
         {
             float dx = node->point[0] - target[0];
             float dy = node->point[1] - target[1];
-            if((node->point[0] >= target[0] - distTol)  && (node->point[0] <= target[0] + distTol) && (node->point[1] >= target[1] - distTol) && (node->point[1] <= target[1] + distTol))
+            if((node->point[0] >= (target[0] - distTol))  && (node->point[0] <= (target[0] + distTol)) && (node->point[1] >= (target[1] - distTol)) && (node->point[1] <= (target[1] + distTol)) )
             {
                 float dist = sqrt(dx*dx + dy*dy);
                 if (dist <= distTol)

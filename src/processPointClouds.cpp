@@ -26,14 +26,19 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
 
     // Time segmentation process
     auto startTime = std::chrono::steady_clock::now();
+    typename pcl::PointCloud<PointT>::Ptr cloud_filtered{new pcl::PointCloud<PointT>};
 
     // TODO:: Fill in the function to do voxel grid point reduction and region based filtering
+    typename pcl::VoxelGrid<PointT> sor;
+    sor.setInputCloud(cloud);
+    sor.setLeafSize(filterRes, filterRes, filterRes);
+    sor.filter(*cloud_filtered);
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "filtering took " << elapsedTime.count() << " milliseconds" << std::endl;
 
-    return cloud;
+    return cloud_filtered;
 
 }
 
@@ -222,6 +227,37 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult(cloudOutliers,cloudInliers);
     return segResult;
 }
+
+//template<typename PointT>
+//std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::Clustering_algo(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize)
+//{
+//    // Time clustering process
+//    auto startTime = std::chrono::steady_clock::now();
+
+//    std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters;
+
+//    // TODO:: Fill in the function to perform euclidean clustering to group detected obstacles
+//    // Use built in pcl functions for clustering
+//    // KDtree object for clustering the points
+//    typename pcl::search::KdTree<PointT>::Ptr tree(new typename pcl::search::KdTree<PointT>);
+//    // Insert cloud points in tree
+//    for (int i=0; i<cloud->points.size(); i++)
+//        tree->insert(cloud->points[i],i);
+
+//    std::vector<std::vector<int>> clusters_indices = euclideanCluster(cloud->points, tree, clusterTolerance);
+
+//    for(std::vector<int> cluster_indices: clusters_indices)
+//    {
+//        typename pcl::PointCloud<PointT>::Ptr cluster;
+//        for(int idx: cluster_indices)
+//        {
+//            cluster->points.push_back(cloud->points[idx]);
+//        }
+//        clusters.push_back(cluster);
+//    }
+//    return clusters;
+
+//}
 
 template<typename PointT>
 std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize)

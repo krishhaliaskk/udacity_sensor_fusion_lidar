@@ -20,6 +20,7 @@
 #include "render/box.h"
 #include <unordered_set>
 
+
 template<typename PointT>
 class ProcessPointClouds {
 public:
@@ -40,6 +41,8 @@ public:
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SegmentPlane_algo(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold);
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize);
+
+    //std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering_algo(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize);
 
     Box BoundingBox(typename pcl::PointCloud<PointT>::Ptr cluster);
 
