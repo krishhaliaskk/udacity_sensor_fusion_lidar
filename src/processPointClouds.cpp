@@ -26,7 +26,7 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
 
     // Time segmentation process
     auto startTime = std::chrono::steady_clock::now();
-    typename pcl::PointCloud<PointT>::Ptr cloud_filtered{new pcl::PointCloud<PointT>};
+    typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
 
     // TODO:: Fill in the function to do voxel grid point reduction and region based filtering
     typename pcl::VoxelGrid<PointT> sor;
@@ -34,11 +34,40 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     sor.setLeafSize(filterRes, filterRes, filterRes);
     sor.filter(*cloud_filtered);
 
+    pcl::CropBox<PointT> boxFilter(true);
+    boxFilter.setMin(minPoint);
+    boxFilter.setMax(maxPoint);
+    boxFilter.setInputCloud(cloud_filtered);
+    typename pcl::PointCloud<PointT>::Ptr cloud_filtered2 (new pcl::PointCloud<PointT>());
+    boxFilter.filter(*cloud_filtered2);
+
+    // Crop roof top points
+    std::vector<int> indices;
+    pcl::CropBox<PointT> roof(true);
+    roof.setMin(Eigen::Vector4f(-1.5,-1.7,-1.,1));
+    roof.setMax(Eigen::Vector4f(2.6,1.7,-.4,1));
+    roof.setInputCloud(cloud_filtered2);
+    roof.filter(indices);
+
+    pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
+    for (const auto elem: indices)
+        inliers->indices.push_back(elem);
+
+    typename pcl::PointCloud<PointT>::Ptr cloudRegion (new pcl::PointCloud<PointT>());
+
+    pcl::ExtractIndices<PointT> extract;
+    extract.setInputCloud(cloud_filtered2);
+    extract.setIndices(inliers);
+    extract.setNegative(true);
+    extract.filter(*cloudRegion);
+
+
+
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "filtering took " << elapsedTime.count() << " milliseconds" << std::endl;
 
-    return cloud_filtered;
+    return cloud_filtered2;
 
 }
 
@@ -217,7 +246,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     // based on these indices
     for(int index = 0; index < cloud->points.size(); index++)
     {
-        pcl::PointXYZ point = cloud->points[index];
+        PointT point = cloud->points[index];
         if(inliersResult.count(index))
             cloudInliers->points.push_back(point);
         else

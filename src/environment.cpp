@@ -92,8 +92,15 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     ProcessPointClouds<pcl::PointXYZI>* point_processor = new ProcessPointClouds<pcl::PointXYZI>();
     pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud = point_processor->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
     //renderPointCloud(viewer, input_cloud, "input_cloud");
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered = point_processor->FilterCloud(input_cloud, 0.1f, Eigen::Vector4f(1,1,1,1), Eigen::Vector4f(1,1,1,1));
-    renderPointCloud(viewer, cloud_filtered, "cloud_filtered");
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered = point_processor->FilterCloud(input_cloud, 0.5f, Eigen::Vector4f(-20, -5, 100, 1), Eigen::Vector4f(20, 5, 100, 1));
+    //renderPointCloud(viewer, cloud_filtered, "cloud_filtered");
+
+    std::pair< pcl::PointCloud<pcl::PointXYZI>::Ptr ,pcl::PointCloud<pcl::PointXYZI>::Ptr > segResult = point_processor->SegmentPlane_algo(cloud_filtered, 100, 0.2);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr obstacle_cloud = segResult.first;
+    pcl::PointCloud<pcl::PointXYZI>::Ptr road_cloud = segResult.second;
+    // Render the two clouds
+    renderPointCloud(viewer, obstacle_cloud, "obstacle_cloud", Color(1,0,0));
+    renderPointCloud(viewer, road_cloud, "road_cloud", Color(0,1,0));
 }
 
 //setAngle: SWITCH CAMERA ANGLE {XY, TopDown, Side, FPS}
